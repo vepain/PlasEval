@@ -311,7 +311,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 					#if count[0] % 10000 == 0:
 					#	print(count[0])
 					if count[0] > max_calls:
-						logger.info(f'Max number of iterations reached: {max_calls}'); sys.exit()
+						logger.info(f'Max number of iterations reached: {max_calls}'); sys.exit(f'Max number of iterations reached: {max_calls}')
 					current_state['cuts_cost'], current_state['joins_cost'] \
 						= compute_current_cost(current_state['matching'], pls_ids_dict, contigs_dict, p)
 					current_state['total_cost'] = current_state['cuts_cost'] + current_state['joins_cost']
