@@ -303,7 +303,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				current_contig = sorted_contig_list[current_state['level']]		#Retrieve contig for current level				
 				m = len(contigs_dict[current_contig]['L_copies'])
 				n = len(contigs_dict[current_contig]['R_copies'])			
-				matchings = generate_matchings(m,n); logger.info(f'Number of matchings: {len(matchings)}')
+				matchings = generate_matchings(m,n);
 				for matching in matchings:
 					matched_posns = get_matching_positions(contigs_dict[current_contig], matching)
 					current_state['matching'][current_contig] = matched_posns
