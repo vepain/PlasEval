@@ -7,6 +7,7 @@ from math import factorial
 import logging
 import psutil
 import time
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -302,7 +303,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				current_contig = sorted_contig_list[current_state['level']]		#Retrieve contig for current level				
 				m = len(contigs_dict[current_contig]['L_copies'])
 				n = len(contigs_dict[current_contig]['R_copies'])			
-				matchings = generate_matchings(m,n)
+				matchings = generate_matchings(m,n); logger.info(f'Number of matchings: {len(matchings)}')
 				for matching in matchings:
 					matched_posns = get_matching_positions(contigs_dict[current_contig], matching)
 					current_state['matching'][current_contig] = matched_posns
@@ -310,7 +311,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 					#if count[0] % 10000 == 0:
 					#	print(count[0])
 					if count[0] > max_calls:
-						return None
+						logger.info(f'Max number of iterations reached: {max_calls}'); sys.exit()
 					current_state['cuts_cost'], current_state['joins_cost'] \
 						= compute_current_cost(current_state['matching'], pls_ids_dict, contigs_dict, p)
 					current_state['total_cost'] = current_state['cuts_cost'] + current_state['joins_cost']
