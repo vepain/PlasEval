@@ -351,7 +351,8 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 		#print("Dissimilarity_score\t", dissimilarity)
 
 		logger.info(f'{final_state["matching"]}')
-
+                
+		if total_denom == 0.0: total_denom = 1.0
 		results_file.write("Total_ctg_length\t" + str(total_len) + "\n")
 		results_file.write("Total_ctg_length_alpha\t" + str(total_denom) + "\n")
 		results_file.write("Cuts\t" + str(final_state['cuts_cost']) + "\t" + str(final_state['cuts_cost']/total_denom) + "\n")
