@@ -1,3 +1,4 @@
+
 import networkx as nx
 import itertools
 from collections import defaultdict
@@ -7,6 +8,7 @@ from math import factorial
 import logging
 import psutil
 import time
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -302,7 +304,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				current_contig = sorted_contig_list[current_state['level']]		#Retrieve contig for current level				
 				m = len(contigs_dict[current_contig]['L_copies'])
 				n = len(contigs_dict[current_contig]['R_copies'])			
-				matchings = generate_matchings(m,n)
+				matchings = generate_matchings(m,n);
 				for matching in matchings:
 					matched_posns = get_matching_positions(contigs_dict[current_contig], matching)
 					current_state['matching'][current_contig] = matched_posns
@@ -310,7 +312,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 					#if count[0] % 10000 == 0:
 					#	print(count[0])
 					if count[0] > max_calls:
-						return None
+						logger.info(f'Max number of iterations reached: {max_calls}'); sys.exit(f'Max number of iterations reached: {max_calls}')
 					current_state['cuts_cost'], current_state['joins_cost'] \
 						= compute_current_cost(current_state['matching'], pls_ids_dict, contigs_dict, p)
 					current_state['total_cost'] = current_state['cuts_cost'] + current_state['joins_cost']
@@ -340,21 +342,22 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 			total_len += (l_copies + r_copies) * ctg_len
 			total_denom += (l_copies + r_copies) * (ctg_len**p)
 
-		dissimilarity = (unique_left_cost + unique_right_cost + final_state['total_cost'])/total_denom
-		print("Total_ctg_length\t", total_len)
-		print("Total_ctg_length_alpha\t", total_denom)
-		print("Cuts_cost\t", final_state['cuts_cost'])
-		print("Joins_cost\t", final_state['joins_cost'])
-		print("Unique_left_ctgs\t", unique_left_cost)
-		print("Unique_right_ctgs\t", unique_right_cost)
-		print("Dissimilarity_score\t", dissimilarity)
+		dissimilarity_score = (unique_left_cost + unique_right_cost + final_state['total_cost'])
+		#print("Total_ctg_length\t", total_len)
+		#print("Total_ctg_length_alpha\t", total_denom)
+		#print("Cuts_cost\t", final_state['cuts_cost'])
+		#print("Joins_cost\t", final_state['joins_cost'])
+		#print("Unique_left_ctgs\t", unique_left_cost)
+		#print("Unique_right_ctgs\t", unique_right_cost)
+		#print("Dissimilarity_score\t", dissimilarity)
 
 		logger.info(f'{final_state["matching"]}')
-
+                
+		if total_denom == 0.0: total_denom = 1.0
 		results_file.write("Total_ctg_length\t" + str(total_len) + "\n")
 		results_file.write("Total_ctg_length_alpha\t" + str(total_denom) + "\n")
-		results_file.write("Cuts_cost\t" + str(final_state['cuts_cost']) +"\n")
-		results_file.write("Joins_cost\t" + str(final_state['joins_cost']) +"\n")
-		results_file.write("Unique_left_ctgs\t" + str(unique_left_cost) + "\n")
-		results_file.write("Unique_right_ctgs\t" + str(unique_right_cost) + "\n")
-		results_file.write("Dissimilarity_score\t" + str(dissimilarity) + "\n")
+		results_file.write("Cuts\t" + str(final_state['cuts_cost']) + "\t" + str(final_state['cuts_cost']/total_denom) + "\n")
+		results_file.write("Joins\t" + str(final_state['joins_cost']) + "\t" + str(final_state['joins_cost']/total_denom) + "\n")
+		results_file.write("Extra_ctgs\t" + str(unique_left_cost) + "\t" + str(unique_left_cost/total_denom) + "\n")
+		results_file.write("Missing_ctgs\t" + str(unique_right_cost) + "\t" + str(unique_right_cost/total_denom) + "\n")
+		results_file.write("Dissimilarity\t" + str(dissimilarity_score) + "\t" + str(dissimilarity_score/total_denom) + "\n")

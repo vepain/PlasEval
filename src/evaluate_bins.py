@@ -211,4 +211,3 @@ def eval_mode(pred_file, gt_file, min_len, output_file):
 	eval_bins(pred_dict, gt_dict, len_dict, min_len, eval_file)
 
 			
-
