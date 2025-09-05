@@ -1,0 +1,19 @@
+evaluate_bins - INFO - #Precision: Proportion of correctedly identified contigs for each prediction
+evaluate_bins - INFO - >Precision details
+evaluate_bins - INFO - #Predicted_bin	Unwtd_Precision	Unwtd_Reference_plasmid	Wtd_Precision	Wtd_Reference_plasmid
+evaluate_bins - INFO - GT0	1.0	GT0	1.0	GT0
+evaluate_bins - INFO - GT1	0.4	GT0	0.6857	GT0
+evaluate_bins - INFO - 
+evaluate_bins - INFO - #Recall: Proportion of correctedly identified contigs for each reference
+evaluate_bins - INFO - >Recall details
+evaluate_bins - INFO - #Reference_plasmid	Unwtd_Recall	Unwtd_Predicted_bin	Wtd_Recall	Wtd_Predicted_bin
+evaluate_bins - INFO - GT0	1.0	GT0	1.0	GT0
+evaluate_bins - INFO - GT1	0.5	GT1	0.2941	GT1
+evaluate_bins - INFO - GT2	0.0	NA	0.0	NA
+evaluate_bins - INFO - 
+evaluate_bins - INFO - #Final statistics (Unwtd and Wtd)
+evaluate_bins - INFO - >Overall details
+evaluate_bins - INFO - #Overall_statistic	Unwtd_statistic	Wtd_statistic
+evaluate_bins - INFO - Precision	0.625	0.8405797101449275
+evaluate_bins - INFO - Recall	0.625	0.6111111111111112
+evaluate_bins - INFO - F1	0.625	0.7077093732667776

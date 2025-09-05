@@ -20,6 +20,7 @@ def main():
 	eval_parser.add_argument("--gt", help="Path to contig to plasmid mapping file")
 	eval_parser.add_argument("--min_len", type=int, default=0, help="Minimum length of contigs")
 	eval_parser.add_argument("--out_file", help="Path to output file")
+	eval_parser.add_argument("--log_file", help="Path to log file")
 	#Compare mode
 	comp_parser = subparsers.add_parser("comp", help = "compare two sets of plasmid bins")
 	comp_parser.add_argument("--l", help="Path to file with 1st set of plasmids")
@@ -32,7 +33,7 @@ def main():
 	args = parser.parse_args()
 
 	if args.mode == "eval":
-		eb.eval_mode(args.pred, args.gt, args.min_len, args.out_file)
+		eb.eval_mode(args.pred, args.gt, args.min_len, args.out_file, args.log_file)
 	if args.mode == "comp":
 		pcm.comp_mode(args.l, args.r, args.p, args.min_len, args.max_calls, args.out_file, args.log_file)
 
