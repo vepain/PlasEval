@@ -131,11 +131,14 @@ def modify_partitions(partitions, common):
 	'''
 	modified_partitions = []
 	for S in partitions:
-		if len(S.intersection(common)) != 0 or S.intersection(common) != S:
+		if len(S.intersection(common)) != 0 and S.intersection(common) != S:
+			#if len(S.intersection(common)) != 0:
 			modified_partitions.append(S.intersection(common))
+			#if len(S.intersection(common)) != 0:
 			modified_partitions.append(S.difference(common))
 		elif S.intersection(common) == S:
-			modified_partitions.append(S)				
+			#if len(S) != 0:
+			modified_partitions.append(S)	
 	return modified_partitions		
 
 def get_partition_cost(partitions, contigs_dict, p):
@@ -154,9 +157,10 @@ def get_partition_cost(partitions, contigs_dict, p):
 		for contig in S:
 			contig_len = contigs_dict[contig.split('_')[0]]['length']
 			S_len += contig_len
-		S_cost = S_len**p
-		total_len += S_cost
-		largest_part_cost = max(largest_part_cost, S_cost)
+		if S_len != 0:
+			S_cost = S_len**p
+			total_len += S_cost
+			largest_part_cost = max(largest_part_cost, S_cost)
 	cost = total_len - largest_part_cost
 	return total_len, cost
 
@@ -309,8 +313,7 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 					matched_posns = get_matching_positions(contigs_dict[current_contig], matching)
 					current_state['matching'][current_contig] = matched_posns
 					count[0] += 1
-					#if count[0] % 10000 == 0:
-					#	print(count[0])
+
 					if count[0] > max_calls:
 						logger.info(f'Max number of iterations reached: {max_calls}'); sys.exit(f'Max number of iterations reached: {max_calls}')
 					current_state['cuts_cost'], current_state['joins_cost'] \
@@ -350,8 +353,12 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 		#print("Unique_left_ctgs\t", unique_left_cost)
 		#print("Unique_right_ctgs\t", unique_right_cost)
 		#print("Dissimilarity_score\t", dissimilarity)
-
-		logger.info(f'{final_state["matching"]}')
+		logger.info(f'contig\tleft_plasmid_id\tleft_plasmid_position\tright_plasmid_id\tright_plasmid_position')
+		for ctg in final_state["matching"]:
+			n_copies = len(final_state["matching"][ctg][0])
+			for i in range(n_copies):
+				logger.info(f'{ctg}\t{final_state["matching"][ctg][0][i][1]}\t{final_state["matching"][ctg][0][i][2]}\t{final_state["matching"][ctg][1][i][1]}\t{final_state["matching"][ctg][1][i][2]}')
+		#logger.info(f'{final_state["matching"]}')
                 
 		if total_denom == 0.0: total_denom = 1.0
 		results_file.write("Total_ctg_length\t" + str(total_len) + "\n")
