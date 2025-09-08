@@ -89,7 +89,7 @@ python plaseval.py comp --l LEFT_BINS_TSV --r RIGHT_BINS_TSV --out_file OUT_FILE
 where `LEFT_BINS_TSV` and `RIGHT_BINS_TSV` are TSV files, each with one set of plasmid bins. `out_file` is the path to the output file while `log_file` is the path to the log file. The parameters `min_len`, `p` and `max_calls` are optional.
 
 ### Output
-1. The output file is TSV file with the following columns:<br/>Level	Statistic	Bin	Unwtd_Stat	Wtd_Stat	Unwtd_Match	Wtd_Match
+1. The output file is TSV file with the following columns:<br/>
 	a. Level: Precision and recall statistics are computed for individual bins ('Individual' level). The average precision, recall and F1 statistics are then computed for the overall sample ('Overall' level).<br/> 
 	b. Statistic: This columns list the type of statistic ('Precision', 'Recall' or 'F1').<br/> 
 	c. Bin: For the 'Individual' level, we compute the precision for each predicted plasmid bin and the recall for each ground truth plasmid bin. The identity of the bin (predicted or ground truth) is given in this column. Note that this column is empty for 'Overall' sample statistics.<br/>
