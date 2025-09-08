@@ -1,4 +1,3 @@
-
 import networkx as nx
 import itertools
 from collections import defaultdict
@@ -132,12 +131,9 @@ def modify_partitions(partitions, common):
 	modified_partitions = []
 	for S in partitions:
 		if len(S.intersection(common)) != 0 and S.intersection(common) != S:
-			#if len(S.intersection(common)) != 0:
 			modified_partitions.append(S.intersection(common))
-			#if len(S.intersection(common)) != 0:
 			modified_partitions.append(S.difference(common))
 		elif S.intersection(common) == S:
-			#if len(S) != 0:
 			modified_partitions.append(S)	
 	return modified_partitions		
 
@@ -278,7 +274,6 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 	logger.info(f'Maximum possible matchings: {max_n_matchings}')
 
 	start_time = time.time()
-	#if max_n_matchings <= 10000000:
 	dummy_var = 1
 	if dummy_var == 1:
 		### Branch-N-Bound ###
@@ -303,7 +298,6 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				Final state dictionary (non local variable)
 			'''
 			nonlocal final_state
-			#count[0] += 1
 			if current_state['level'] < len(sorted_contig_list):				#Compute cost upto current level
 				current_contig = sorted_contig_list[current_state['level']]		#Retrieve contig for current level				
 				m = len(contigs_dict[current_contig]['L_copies'])
@@ -339,26 +333,17 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 		for c in contigs_dict:
 			l_copies, r_copies = len(contigs_dict[c]['L_copies']), len(contigs_dict[c]['R_copies'])
 			ctg_len = contigs_dict[c]['length']
-			if min(l_copies, r_copies) == 0: #NOTE: This is 0 in order to not penalize extra copies of common contigs
-				unique_left_cost += max(l_copies - r_copies, 0) * (ctg_len**p)
-				unique_right_cost += max(r_copies - l_copies, 0) * (ctg_len**p)
+			unique_left_cost += max(l_copies - r_copies, 0) * (ctg_len**p)
+			unique_right_cost += max(r_copies - l_copies, 0) * (ctg_len**p)
 			total_len += (l_copies + r_copies) * ctg_len
 			total_denom += (l_copies + r_copies) * (ctg_len**p)
 
 		dissimilarity_score = (unique_left_cost + unique_right_cost + final_state['total_cost'])
-		#print("Total_ctg_length\t", total_len)
-		#print("Total_ctg_length_alpha\t", total_denom)
-		#print("Cuts_cost\t", final_state['cuts_cost'])
-		#print("Joins_cost\t", final_state['joins_cost'])
-		#print("Unique_left_ctgs\t", unique_left_cost)
-		#print("Unique_right_ctgs\t", unique_right_cost)
-		#print("Dissimilarity_score\t", dissimilarity)
 		logger.info(f'contig\tleft_plasmid_id\tleft_plasmid_position\tright_plasmid_id\tright_plasmid_position')
 		for ctg in final_state["matching"]:
 			n_copies = len(final_state["matching"][ctg][0])
 			for i in range(n_copies):
 				logger.info(f'{ctg}\t{final_state["matching"][ctg][0][i][1]}\t{final_state["matching"][ctg][0][i][2]}\t{final_state["matching"][ctg][1][i][1]}\t{final_state["matching"][ctg][1][i][2]}')
-		#logger.info(f'{final_state["matching"]}')
                 
 		if total_denom == 0.0: total_denom = 1.0
 		results_file.write("Total_ctg_length\t" + str(total_len) + "\n")
