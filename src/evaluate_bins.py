@@ -22,7 +22,7 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 		'''
 		stat_dict = {'wtd': {}, 'unwtd': {}}
 		for eval_type in ['wtd', 'unwtd']: 
-			stat_dict[eval_type] = {'Val': 0, 'Bin': 'NA', 'Common': 0, 'Total': 0}
+			stat_dict[eval_type] = {'Val': 0, 'Bin': None, 'Common': 0, 'Total': 0}
 		return stat_dict
 	
 	def get_total_ctgs(ctg_list, len_dict, th_len):
@@ -119,11 +119,12 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 			Details of bin matched to bin in question
 		Output: None
 		'''
-		logger.info(f"{bin_id}\t{str(best_match['n_stat'])}\t{best_match['n_bin']}\t{str(best_match['len_stat'])}\t{best_match['len_bin']}")
-		#eval_file.write(bin_id + '\t' \
-		#	 	+ str(best_match['n_stat']) + '\t' + best_match['n_bin'] + '\t' \
-		#		+ str(best_match['len_stat']) + '\t' + best_match['len_bin'] +"\n")
-		eval_file.write(f"Individual\t{stat_type}\t{bin_id}\t{str(best_match['n_stat'])}\t{best_match['n_bin']}\t{str(best_match['len_stat'])}\t{best_match['len_bin']}\n")
+		if best_match['n_bin']:
+			logger.info(f"{bin_id}\t{str(best_match['n_stat'])}\t{best_match['n_bin']}\t{str(best_match['len_stat'])}\t{best_match['len_bin']}")
+			eval_file.write(f"Individual\t{stat_type}\t{bin_id}\t{str(best_match['n_stat'])}\t{best_match['n_bin']}\t{str(best_match['len_stat'])}\t{best_match['len_bin']}\n")
+		else:
+			logger.info(f"{bin_id}\t{str(best_match['n_stat'])}\t{None}\t{str(best_match['len_stat'])}\t{None}")
+			eval_file.write(f"Individual\t{stat_type}\t{bin_id}\t{str(best_match['n_stat'])}\t{None}\t{str(best_match['len_stat'])}\t{None}\n")			
 		
 	def compute_overall_stat(ovr_details):
 		'''
@@ -142,9 +143,6 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 	logger.info(f'#Precision: Proportion of correctedly identified contigs for each prediction')
 	logger.info(f'>Precision details')
 	logger.info(f'#Predicted_bin\tUnwtd_Precision\tUnwtd_Reference_plasmid\tWtd_Precision\tWtd_Reference_plasmid')
-	#eval.write("#Precision: Proportion of correctedly identified contigs for each prediction\n")
-	#eval.write(">Precision details\n")
-	#eval.write("#Predicted_bin\tUnwtd_Precision\tUnwtd_Reference_plasmid\tWtd_Precision\tWtd_Reference_plasmid\n")
 	ovr_details = {'ovr_n_common': 0, 'ovr_len_common': 0, 'ovr_n_total': 0, 'ovr_len_total': 0}
 	for bin_id in precision:
 		best_match_details = {'n_stat': None, 'n_bin': None, 'len_stat': None, 'len_bin': None}
@@ -152,16 +150,14 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 			compute_overall_details(precision[bin_id], best_match_details, ovr_details)
 		write_best_match_details(eval_file, bin_id, best_match_details, 'Precision')
 	ovr_n_prec, ovr_len_prec = compute_overall_stat(ovr_details)
+	ovr_n_prec = float("{:.4f}".format(ovr_n_prec))
+	ovr_len_prec = float("{:.4f}".format(ovr_len_prec))
 
 	logger.info(f'')
-	#eval.write("\n")
 
 	logger.info(f'#Recall: Proportion of correctedly identified contigs for each reference')
 	logger.info(f'>Recall details')
 	logger.info(f'#Reference_plasmid\tUnwtd_Recall\tUnwtd_Predicted_bin\tWtd_Recall\tWtd_Predicted_bin')
-	#eval.write("#Recall: Proportion of correctedly identified contigs for each reference\n")
-	#eval.write(">Recall details\n")
-	#eval.write("#Reference_plasmid\tUnwtd_Recall\tUnwtd_Predicted_bin\tWtd_Recall\tWtd_Predicted_bin\n")
 	ovr_details = {'ovr_n_common': 0, 'ovr_len_common': 0, 'ovr_n_total': 0, 'ovr_len_total': 0}
 	ovr_n_rec, ovr_len_rec = 0, 0
 	for bin_id in recall:
@@ -170,15 +166,18 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 			compute_overall_details(recall[bin_id], best_match_details, ovr_details)
 		write_best_match_details(eval_file, bin_id, best_match_details, 'Recall')
 	ovr_n_rec, ovr_len_rec = compute_overall_stat(ovr_details)	
+	ovr_n_rec = float("{:.4f}".format(ovr_n_rec))
+	ovr_len_rec = float("{:.4f}".format(ovr_len_rec))
 
 	logger.info(f'')
-	#eval.write("\n")
 
 	n_f1, len_f1 = 0, 0
 	if (ovr_n_prec + ovr_n_rec) != 0:
 		n_f1 = 2*ovr_n_prec*ovr_n_rec / (ovr_n_prec + ovr_n_rec)
 	if (ovr_len_prec + ovr_len_rec) != 0:
-		len_f1 = 2*ovr_len_prec*ovr_len_rec / (ovr_len_prec + ovr_len_rec)		
+		len_f1 = 2*ovr_len_prec*ovr_len_rec / (ovr_len_prec + ovr_len_rec)	
+	n_f1 = float("{:.4f}".format(n_f1))
+	len_f1 = float("{:.4f}".format(len_f1))
 	
 	logger.info(f'#Final statistics (Unwtd and Wtd)')
 	logger.info(f'>Overall details')
@@ -186,12 +185,6 @@ def eval_bins(pred_dict, pls_dict, len_dict, th_len, eval_file):
 	logger.info(f'Precision\t{str(ovr_n_prec)}\t{str(ovr_len_prec)}')
 	logger.info(f'Recall\t{str(ovr_n_rec)}\t{str(ovr_len_rec)}')
 	logger.info(f'F1\t{str(n_f1)}\t{str(len_f1)}')
-	#eval.write("#Final statistics (Unwtd and Wtd)\n")
-	#eval.write(">Overall details\n")
-	#eval.write("#Overall_statistic\tUnwtd_statistic\tWtd_statistic\n")
-	#eval.write('Precision\t' + str(ovr_n_prec) + '\t' + str(ovr_len_prec) + '\n')
-	#eval.write('Recall\t' + str(ovr_n_rec) + '\t' + str(ovr_len_rec) + '\n')
-	#eval.write('F1\t' + str(n_f1)  + '\t' + str(len_f1) + '\n')
 	eval_file.write(f'Overall\tPrecision\t{None}\t{str(ovr_n_prec)}\t{str(ovr_len_prec)}\t{None}\t{None}\n')
 	eval_file.write(f'Overall\tRecall\t{None}\t{str(ovr_n_rec)}\t{str(ovr_len_rec)}\t{None}\t{None}\n')
 	eval_file.write(f'Overall\tF1\t{None}\t{str(n_f1)}\t{str(len_f1)}\t{None}\t{None}\n')

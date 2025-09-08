@@ -77,7 +77,7 @@ The comparison mode uses two more parameters. Firstly, the value of $\alpha$ can
 #### Usage
 1. The following command is used for the evaluation mode: 
 ```
-python plaseval.py eval --pred PREDICTED_BINS_TSV --gt GROUNDTRUTH_BINS_TSV --out_file OUT_FILE (--min_len LEN_THRESHOLD)
+python plaseval.py eval --pred PREDICTED_BINS_TSV --gt GROUNDTRUTH_BINS_TSV --out_file OUT_FILE --log_file LOG_FILE (--min_len LEN_THRESHOLD)
 ```
 where `pred` and `gt` are TSV files, with the set of predicted and ground truth plasmid bins respecitvely. `out_file` is the path to the output file. The integer length threshold `min_len` can be provided as an optional parameter.
 
@@ -115,7 +115,7 @@ A few toy examples to demonstrate the use of PlasEval have been provided in the 
 1. The following command evaluates predicted plasmid bins (`pred_bins_1.tsv`) against the ground truth plasmid bins (`gt_bins_1.tsv`). Details of the evaluation output will be printed to the file `P1G1_eval.out`.
 ```
 cd src/
-python plaseval.py eval --pred ../examples/input/pred_bins_1.tsv --gt ../examples/input/gt_bins_1.tsv --out_file ../examples/output/P1G1_eval.out
+python plaseval.py eval --pred ../examples/input/pred_bins_1.tsv --gt ../examples/input/gt_bins_1.tsv --out_file ../examples/output/P1G1_eval.out --log_file ../examples/output/P1G1_eval.log
 ```
 
 2. The following command evaluates predicted plasmid bins (`pred_bins_1.tsv`) against the other set of ground truth plasmid bins (`gt_bins_2.tsv`), only considering contigs above $1000$ bp. Details of the evaluation output will be printed to the file `P1G2_eval.out`.

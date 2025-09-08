@@ -1,8 +1,8 @@
 Level	Statistic	Bin	Unwtd_Stat	Wtd_Stat	Unwtd_Match	Wtd_Match
-Individual	Precision	GT0	0.0	NA	0.0	NA
+Individual	Precision	GT0	0.0	None	0.0	None
 Individual	Precision	GT1	0.25	GT1	0.0476	GT1
-Individual	Recall	GT0	0.0	NA	0.0	NA
+Individual	Recall	GT0	0.0	None	0.0	None
 Individual	Recall	GT1	0.3333	GT1	0.0667	GT1
-Overall	Precision	None	0.16666666666666666	0.022222222222222223	None	None
-Overall	Recall	None	0.2	0.02564102564102564	None	None
-Overall	F1	None	0.1818181818181818	0.023809523809523808	None	None
+Overall	Precision	None	0.1667	0.0222	None	None
+Overall	Recall	None	0.2	0.0256	None	None
+Overall	F1	None	0.1818	0.0238	None	None

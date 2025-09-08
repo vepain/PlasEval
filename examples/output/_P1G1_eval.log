@@ -9,11 +9,11 @@ evaluate_bins - INFO - >Recall details
 evaluate_bins - INFO - #Reference_plasmid	Unwtd_Recall	Unwtd_Predicted_bin	Wtd_Recall	Wtd_Predicted_bin
 evaluate_bins - INFO - GT0	0.6667	GT0	0.7059	GT0
 evaluate_bins - INFO - GT1	0.5	GT1	0.2941	GT1
-evaluate_bins - INFO - GT2	0.0	NA	0.0	NA
+evaluate_bins - INFO - GT2	0.0	None	0.0	None
 evaluate_bins - INFO - 
 evaluate_bins - INFO - #Final statistics (Unwtd and Wtd)
 evaluate_bins - INFO - >Overall details
 evaluate_bins - INFO - #Overall_statistic	Unwtd_statistic	Wtd_statistic
-evaluate_bins - INFO - Precision	0.6666666666666666	0.7555555555555555
-evaluate_bins - INFO - Recall	0.5	0.4722222222222222
-evaluate_bins - INFO - F1	0.5714285714285715	0.5811965811965811
+evaluate_bins - INFO - Precision	0.6667	0.7556
+evaluate_bins - INFO - Recall	0.5	0.4722
+evaluate_bins - INFO - F1	0.5714	0.5812

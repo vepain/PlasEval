@@ -3,7 +3,7 @@ Individual	Precision	GT0	1.0	GT0	1.0	GT0
 Individual	Precision	GT1	0.5	GT1	0.4762	GT0
 Individual	Recall	GT0	0.6667	GT0	0.7059	GT0
 Individual	Recall	GT1	0.5	GT1	0.2941	GT1
-Individual	Recall	GT2	0.0	NA	0.0	NA
-Overall	Precision	None	0.6666666666666666	0.7555555555555555	None	None
-Overall	Recall	None	0.5	0.4722222222222222	None	None
-Overall	F1	None	0.5714285714285715	0.5811965811965811	None	None
+Individual	Recall	GT2	0.0	None	0.0	None
+Overall	Precision	None	0.6667	0.7556	None	None
+Overall	Recall	None	0.5	0.4722	None	None
+Overall	F1	None	0.5714	0.5812	None	None
