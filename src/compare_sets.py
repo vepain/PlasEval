@@ -130,7 +130,7 @@ def modify_partitions(partitions, common):
 	'''
 	modified_partitions = []
 	for S in partitions:
-		if len(S.intersection(common)) != 0 and S.intersection(common) != S:
+		if len(S.intersection(common)) != 0 or S.intersection(common) != S:
 			modified_partitions.append(S.intersection(common))
 			modified_partitions.append(S.difference(common))
 		elif S.intersection(common) == S:
@@ -167,7 +167,7 @@ def compute_splits_cost(pls_ids, side_contig_copies, opp_contig_copies, B, flag,
 		side_contig_copies: list of contig copies in plasmid set
 		opp_contig_copies: list of contig copies in opposite plasmid set
 		B: bipartite graph object
-		flag (binary): variable to indicate if side is left or right
+		flag (binary): variable to indicate if side is left (0) or right (1)
 		Dictionaries of plasmids and contigs
 	Returns:
 		Total cost of splits (cuts OR joins) for one plasmid set
@@ -217,11 +217,12 @@ def compute_match_cost(left_contig_copies, right_contig_copies, pls_ids_dict, co
 	left_splits_cost,right_splits_cost = 0, 0
 	for i in range(n_conn_comp):
 		C = list(A)[i]
-		left_pls_ids, right_pls_ids = nx.bipartite.sets(C)							#Split the component according to bipartite sets
+		left_pls_ids, right_pls_ids = nx.bipartite.sets(C)		#Split the component according to bipartite sets
 		if len(list(right_pls_ids)) != 0 and list(right_pls_ids)[0] in left_pls_set: 	#Ensuring proper assignments of bipartite parts
 			right_pls_ids,left_pls_ids = left_pls_ids,right_pls_ids
 		left_splits_cost += compute_splits_cost(left_pls_ids, left_contig_copies, right_contig_copies, B, 0, pls_ids_dict, contigs_dict, p)
 		right_splits_cost += compute_splits_cost(right_pls_ids, right_contig_copies, left_contig_copies, B, 1, pls_ids_dict, contigs_dict, p)
+
 	return left_splits_cost, right_splits_cost	
 
 def compute_current_cost(matching_dict, pls_ids_dict, contigs_dict, p):
@@ -277,8 +278,8 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 	dummy_var = 1
 	if dummy_var == 1:
 		### Branch-N-Bound ###
-		current_state = {'level': 0, 'total_cost': 0, 'matching': {}, 'cuts_cost': 0, 'joins_cost': 0}
-		final_state = {'total_cost': max_cost, 'matching': {}, 'cuts_cost': 0, 'joins_cost': 0}
+		current_state = {'level': 0, 'total_cost': 0, 'matching': {}, 'cuts_cost': 0, 'joins_cost': 0, 'unmatched': {}}
+		final_state = {'total_cost': max_cost, 'matching': {}, 'cuts_cost': 0, 'joins_cost': 0, 'unmatched': {}}
 
 		contig_list = list(common_contigs)
 		sorted_contig_list = sorted(contig_list, key=lambda ctg: n_matchings[ctg])
@@ -291,8 +292,9 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				Current state dictionary: 
 					level: Distance from root of tree (int)
 					total_cost: Cost of cuts and joins upto this level (int)
-					matching: Nested dictionary withs contig ids (str) as keys and a pair (set) of lists of contigs as values
-					cuts_cost, joins_cost: Cost of cuts, joins (respectively) upto this level (int)				
+					matching: Nested dictionary with contig ids (str) as keys and a pair (set) of lists of contigs as values
+					cuts_cost, joins_cost: Cost of cuts, joins (respectively) upto this level (int)		
+					unmatched: Nested dictionary with contigs ids (str) as keys and as values, a dictionary with bin ids as keys and number of extra contigs as values 		
 			Updates:
 				Current state dictionary
 				Final state dictionary (non local variable)
@@ -302,10 +304,12 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 				current_contig = sorted_contig_list[current_state['level']]		#Retrieve contig for current level				
 				m = len(contigs_dict[current_contig]['L_copies'])
 				n = len(contigs_dict[current_contig]['R_copies'])			
-				matchings = generate_matchings(m,n);
+				matchings = generate_matchings(m,n)
 				for matching in matchings:
 					matched_posns = get_matching_positions(contigs_dict[current_contig], matching)
+					#matched_posns, unmatched_posns = get_matching_positions(contigs_dict[current_contig], matching)
 					current_state['matching'][current_contig] = matched_posns
+					#current_state['unmatched'][current_contig] = unmatched_posns
 					count[0] += 1
 
 					if count[0] > max_calls:
@@ -331,12 +335,37 @@ def run_compare_plasmids(contigs_dict, pls_ids_dict, p, max_calls, results_file)
 		
 		total_len, total_denom, unique_left_cost, unique_right_cost = 0, 0, 0, 0
 		for c in contigs_dict:
+			#if c not in common_contigs:
 			l_copies, r_copies = len(contigs_dict[c]['L_copies']), len(contigs_dict[c]['R_copies'])
 			ctg_len = contigs_dict[c]['length']
 			unique_left_cost += max(l_copies - r_copies, 0) * (ctg_len**p)
 			unique_right_cost += max(r_copies - l_copies, 0) * (ctg_len**p)
 			total_len += (l_copies + r_copies) * ctg_len
 			total_denom += (l_copies + r_copies) * (ctg_len**p)
+
+		'''
+		uncommon_copies_per_bin = {}
+		for c in contigs_dict:
+			if c not in common_contigs:
+				uncommon_copies_per_bin[c] = {}
+				l_copies, r_copies = len(contigs_dict[c]['L_copies']), len(contigs_dict[c]['R_copies'])
+				if l_copies > r_copies:
+					for l_copy in contigs_dict[c]['L_copies']:
+						bin_id = l_copy[1]
+						if bin_id not in uncommon_copies_per_bin[c]:
+							uncommon_copies_per_bin[c][bin_id] = 0
+						uncommon_copies_per_bin[c] += 1	
+				else:
+					for r_copy in contigs_dict[c]['R_copies']:
+						bin_id = r_copy[1]
+						if bin_id not in uncommon_copies_per_bin[c]:
+							uncommon_copies_per_bin[c][bin_id] = 0
+						uncommon_copies_per_bin[c] += 1	
+		'''
+				
+					
+				 
+
 
 		dissimilarity_score = (unique_left_cost + unique_right_cost + final_state['total_cost'])
 		logger.info(f'contig\tleft_plasmid_id\tleft_plasmid_position\tright_plasmid_id\tright_plasmid_position')
