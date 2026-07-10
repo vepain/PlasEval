@@ -3,7 +3,7 @@ From: ubuntu:24.04
 
 %files
     src/pixi.toml /opt/plaseval/pixi.toml
-    src/pixi.lock /opt/plaseval/pixi.lock
+    # src/pixi.lock /opt/plaseval/pixi.lock
     src/*.py /opt/plaseval/
 
 %post
@@ -22,6 +22,7 @@ From: ubuntu:24.04
 
     cd /opt/plaseval
 
+    pixi lock
     pixi install --frozen
 
 %environment
